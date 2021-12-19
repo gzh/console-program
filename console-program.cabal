@@ -1,5 +1,5 @@
 name:            console-program
-version:         0.4.2.3
+version:         0.4.3
 cabal-Version:   >= 1.6
 license:         BSD3
 author:          Arie Peterson
@@ -48,6 +48,7 @@ library
     ansi-terminal >= 0.5 && < 0.10,
     haskeline >= 0.7,
     transformers >= 0.2 && < 0.6,
+    exceptions >= 0.10,
     utility-ht == 0.0.*,
     split == 0.2.*,
     parsec == 3.1.*,

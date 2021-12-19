@@ -18,7 +18,6 @@ module System.Console.Program
   -- $configfile
   ) where
 
-
 import           System.Console.Command    (Commands,Command,shorten)
 import           System.Console.ConfigFile (readFromFile)
 import           System.Console.Internal   
@@ -34,6 +33,7 @@ import           System.Console.Internal
   , ConsoleProgramException(UnknownCommand)
   )
 
+import Control.Monad.Catch
 import           Control.Applicative       (Applicative,(<|>),(*>))
 import           Control.Arrow             ((&&&),first)
 import           Control.Concurrent        (myThreadId)
@@ -130,12 +130,12 @@ single commands = parse commands =<< liftIO getArgs
 -- | Start an interactive session. Arguments to the program are ignored;
 -- instead, the user may repeatedly enter a command, possibly with options,
 -- which will be executed.
-interactive :: (MonadIO m,Haskeline.MonadException m,Applicative m) => Commands m -> m ()
+interactive :: (MonadIO m,MonadMask m,Applicative m) => Commands m -> m ()
 interactive commands = interactiveWithPrompt (return $ name $ Tree.rootLabel commands) commands
 
 -- | Same as 'interactive', but with a custom monadic function specifying the
 -- text of the prompt.
-interactiveWithPrompt :: (MonadIO m,Haskeline.MonadException m,Applicative m)
+interactiveWithPrompt :: (MonadIO m,MonadMask m,Applicative m)
   => m String -> Commands m -> m ()
 interactiveWithPrompt prompt commands = do
   tid <- liftIO myThreadId
@@ -147,10 +147,10 @@ interactiveWithPrompt prompt commands = do
   one = getLine' >>= \ line -> case words' line of
     Left e   -> liftIO $ putStrLn e
     Right ws -> lift (parse commands ws)
-      `Haskeline.catch` (\ (e :: ConsoleProgramException) -> liftIO $ print e)
-      `Haskeline.catch` (\ (e :: AsyncException) -> if e == UserInterrupt
+      `catch` (\ (e :: ConsoleProgramException) -> liftIO $ print e)
+      `catch` (\ (e :: AsyncException) -> if e == UserInterrupt
         then liftIO $ print e
-        else Haskeline.throwIO e)
+        else throwM e)
   getLine' = do
     putStrBold =<< lift prompt
     maybe (liftIO exitSuccess) return =<< Haskeline.getInputLine ": "
