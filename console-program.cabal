@@ -42,12 +42,12 @@ source-repository head
 library
   build-depends:
     base == 4.*,
-    containers >= 0.1 && < 0.7,
-    directory >= 1.0 && < 1.4,
-    ansi-wl-pprint >= 0.5 && < 0.7,
-    ansi-terminal >= 0.5 && < 0.10,
+    containers >= 0.1,
+    directory >= 1.0,
+    ansi-wl-pprint >= 0.5,
+    ansi-terminal >= 0.5,
     haskeline >= 0.7,
-    transformers >= 0.2 && < 0.6,
+    transformers >= 0.2,
     exceptions >= 0.10,
     utility-ht == 0.0.*,
     split == 0.2.*,
@@ -55,7 +55,7 @@ library
     parsec-extra == 0.2.*
   if !os(windows)
     build-depends:
-      unix >= 2.7 && < 2.8
+      unix >= 2.7
   exposed-modules:
     System.Console.Argument,
     System.Console.Command,
