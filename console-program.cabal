@@ -1,6 +1,6 @@
 name:            console-program
-version:         0.4.3
-cabal-Version:   >= 1.6
+version:         0.5.0
+cabal-Version:   >= 1.10
 license:         BSD3
 author:          Arie Peterson
 maintainer:      ariep@xs4all.nl
