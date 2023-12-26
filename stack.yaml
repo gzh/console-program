@@ -43,14 +43,9 @@ packages: [.]
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
 #
-extra-deps:
-  - parsec-extra-0.2.0.0@sha256:47f16e5d00cb62db52d126903787dcccc94d500cfbcb54316f5db00f31da4fa2,735
-
+# extra-deps:
 # Override default flag values for local packages and extra-deps
 # flags: {}
-flags:
-  mintty:
-    Win32-2-13-1: false
 
 # Extra package databases containing global packages
 # extra-package-dbs: []

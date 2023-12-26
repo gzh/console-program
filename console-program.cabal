@@ -1,5 +1,5 @@
 name:            console-program
-version:         0.5.0
+version:         0.6.0
 cabal-Version:   >= 1.10
 license:         BSD3
 author:          Arie Peterson
@@ -52,7 +52,7 @@ library
     utility-ht == 0.0.*,
     split == 0.2.*,
     parsec == 3.1.*,
-    parsec-extra == 0.2.*
+    mtl >= 2.2.1
   if !os(windows)
     build-depends:
       unix >= 2.7

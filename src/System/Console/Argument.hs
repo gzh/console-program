@@ -7,7 +7,7 @@ module System.Console.Argument
   , option
 
   , Type(Type,parser,name,defaultValue)
-  
+
   -- * Argument types
   , optional
   , string
@@ -16,18 +16,24 @@ module System.Console.Argument
   , file
   , device
   , natural
-  , integer  
+  , integer
   ) where
 
 
 import System.Console.Internal hiding (name)
 
+import           Control.Monad.Except
+                                    (MonadError(..))
 import           Data.Char          (toLower)
+import           Data.Foldable
+import           Data.Functor
 import           Data.List.HT       (viewR)
 import qualified Data.Map              as Map
 import qualified System.Console.GetOpt as GetOpt
+import qualified Text.Parsec.Combinator as P
+import qualified Text.Parsec.Char as P
+import           Text.Parsec.Prim   ((<|>),(<?>),parse)
 import           Text.Parsec.String (Parser)
-import qualified Text.Parsec.Extra     as P
 
 
 -- | A @Type a@ represents the type of an option or argument.
@@ -104,7 +110,7 @@ boolean = Type
 natural :: Type Integer
 natural = Type
   { name = "INT (nonnegative)"
-  , parser = parseEither P.natural ""
+  , parser = parseEither naturalP ""
   , defaultValue = Nothing
   }
 
@@ -112,7 +118,7 @@ natural = Type
 integer :: Type Integer
 integer = Type
   { name = "INT"
-  , parser = parseEither P.integer ""
+  , parser = parseEither integerP ""
   , defaultValue = Nothing
   }
 
@@ -137,4 +143,18 @@ device = string { name = "DEVICE" }
 -- Helper functions
 
 parseEither :: Parser a -> String -> String -> Either String a
-parseEither = P.parseM show
+parseEither p s = either (throwError . show) return . parse p s
+
+-- | A decimal digit.
+digitP :: (Integral a) => Parser a
+digitP = fromIntegral . (\c -> fromEnum c - fromEnum '0') <$> P.digit
+
+-- | A natural (i.e. non-negative integer) number, in decimal notation.
+naturalP :: (Integral a) => Parser a
+naturalP = (foldl' (\ a b -> a * 10 + b) 0 <$> P.many1 digitP)
+  <?> "nonnegative decimal integer"
+
+-- | An integer number, in decimal notation (possibly prefixed with \"-\").
+integerP :: (Integral a) => Parser a
+integerP = (P.option id (P.char '-' $> negate) <*> naturalP)
+  <?> "decimal integer"
